@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class palyerJump : MonoBehaviour {
 	private GameObject[] gameObjects;
 	public Vector3 mousepos;
@@ -41,6 +41,9 @@ public class palyerJump : MonoBehaviour {
 			
 			Launch(lataus/10, suunta);
 			lataus = 50;
+		}
+		if(Input.GetKeyDown(KeyCode.Escape)){
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+ -1);
 		}
 		if(laskuri <= 0){
 			pisteet = 0;

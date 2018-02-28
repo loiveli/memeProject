@@ -6,6 +6,7 @@ public class TasoControl : MonoBehaviour {
 	private int ajastin;
 	private bool oikea;
 	private int moveRange;
+	
 	void Start()
 	{
 		ajastin = 0;
