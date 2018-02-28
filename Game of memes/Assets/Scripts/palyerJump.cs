@@ -19,6 +19,7 @@ public class palyerJump : MonoBehaviour {
 	public Vector3 suunta;
 	public int legitPisteet;
 	public Rigidbody memeBody;
+	public GameObject lastSave;
 	void Start () {
 		memeBody = gameObject.GetComponent<Rigidbody>();
 		laskuri = 5;
@@ -28,6 +29,7 @@ public class palyerJump : MonoBehaviour {
 		rightWall.transform.localScale = new Vector3(1,tasoMitta +2, 1 );
 		pisteet = 0;
 		legitPisteet = 0;
+		randomLevel(tasoMitta,0);
 	}
 	
 	// Update is called once per frame
@@ -44,6 +46,9 @@ public class palyerJump : MonoBehaviour {
 		}
 		if(Input.GetKeyDown(KeyCode.Escape)){
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+ -1);
+		}
+		if(Input.GetKeyDown(KeyCode.R)){
+			randomLevel(tasoMitta,lastSave.transform.position.y);
 		}
 		if(laskuri <= 0){
 			pisteet = 0;
@@ -63,14 +68,14 @@ public class palyerJump : MonoBehaviour {
 	{
 		if(other.gameObject.tag == "Box"){
 			laskuri = oldLaskuri;
-			randomLevel(tasoMitta, other.transform.position.y+1);
+			lastSave = other.gameObject;
 			pisteet = 0;
 		}
 		if(other.gameObject.tag == "Wall"){
 			laskuri = oldLaskuri;
 			
-			destroyWithTag("Taso");
-			randomLevel(tasoMitta, other.transform.position.y+1);
+			lastSave = other.gameObject;
+			
 			pisteet = 0;
 		}
 	}
@@ -89,11 +94,14 @@ public class palyerJump : MonoBehaviour {
 		if(other.gameObject.tag == "SavePlane"&&transform.position.y>other.transform.position.y){
 			other.gameObject.GetComponent<Collider>().isTrigger = false ;
 			other.gameObject.tag = "Box";
+			lastSave = other.gameObject;
 			other.gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", Color.green);
 			Instantiate(rightWall, new Vector3(-4.5f, other.transform.position.y +((tasoMitta+2)/2), 0), Quaternion.identity);
 			Instantiate(rightWall, new Vector3(4.5f,other.transform.position.y +((tasoMitta+2)/2) , 0), Quaternion.identity);
+			randomLevel(tasoMitta,lastSave.transform.position.y);
 			legitPisteet += pisteet;
 			pisteet = 0;
+
 		}
 	}
 	
