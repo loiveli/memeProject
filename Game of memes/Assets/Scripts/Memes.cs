@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-public class Jumps : MonoBehaviour {
+public class Memes : MonoBehaviour {
 
 	public GameObject player;
 	
@@ -11,6 +11,6 @@ public class Jumps : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-		gameObject.GetComponent<TextMeshProUGUI>().SetText("Jumps left: "+ player.GetComponent<palyerJump>().laskuri);
+		gameObject.GetComponent<TextMeshProUGUI>().SetText("Dank memes:"+ player.GetComponent<palyerJump>().legitPisteet);
 	}
 }

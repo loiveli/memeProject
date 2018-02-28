@@ -6,22 +6,33 @@ public class palyerJump : MonoBehaviour {
 	private GameObject[] gameObjects;
 	public Vector3 mousepos;
 	// Use this for initialization
+	public int tasoMitta;
+	public GameObject meme;
 	public GameObject Taso;
+	public GameObject rightWall;
+	public GameObject memeTaso;
 	public GameObject savePoint;
 	public int lataus;
 	public int laskuri;
+	public int oldLaskuri;
+	public int pisteet;
 	public Vector3 suunta;
+	public int legitPisteet;
 	public Rigidbody memeBody;
 	void Start () {
 		memeBody = gameObject.GetComponent<Rigidbody>();
-		laskuri = 4;
-		lataus = 30;
-		
+		laskuri = 5;
+		oldLaskuri = 5;
+		lataus = 50;
+		tasoMitta = 10;
+		rightWall.transform.localScale = new Vector3(1,tasoMitta +2, 1 );
+		pisteet = 0;
+		legitPisteet = 0;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		if(Input.GetMouseButton(0)&&lataus < 75){
+		if(Input.GetMouseButton(0)&&lataus < 100){
 			
 			lataus++;
 		} if(Input.GetMouseButtonUp(0)&&memeBody.velocity == Vector3.zero){
@@ -29,12 +40,13 @@ public class palyerJump : MonoBehaviour {
 			suunta = (transform.position-mousepos).normalized;
 			
 			Launch(lataus/10, suunta);
-			lataus = 30;
+			lataus = 50;
 		}
 		if(laskuri <= 0){
-			
+			pisteet = 0;
 			destroyWithTag("Taso");
-			laskuri = 5;
+			oldLaskuri++;
+			laskuri = oldLaskuri;
 		}
 		
 	}
@@ -47,15 +59,16 @@ public class palyerJump : MonoBehaviour {
 	void OnCollisionEnter(Collision other)
 	{
 		if(other.gameObject.tag == "Box"){
-			laskuri = 5;
-			
+			laskuri = oldLaskuri;
+			randomLevel(tasoMitta, other.transform.position.y+1);
+			pisteet = 0;
 		}
 		if(other.gameObject.tag == "Wall"){
-			laskuri = 5;
-			destroyWithTag("Box");
-			destroyWithTag("Taso");
-			randomLevel(10, other.transform.position.y);
+			laskuri = oldLaskuri;
 			
+			destroyWithTag("Taso");
+			randomLevel(tasoMitta, other.transform.position.y+1);
+			pisteet = 0;
 		}
 	}
 	
@@ -70,23 +83,49 @@ public class palyerJump : MonoBehaviour {
 	void OnTriggerExit(Collider other)
 	{
 		Debug.Log("collided with:"+ other.gameObject.tag);
-		if(other.gameObject.tag == "Box"&&transform.position.y>other.transform.position.y){
+		if(other.gameObject.tag == "SavePlane"&&transform.position.y>other.transform.position.y){
 			other.gameObject.GetComponent<Collider>().isTrigger = false ;
+			other.gameObject.tag = "Box";
 			other.gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", Color.green);
-			laskuri = 5;
-			randomLevel(10, other.transform.position.y);
+			Instantiate(rightWall, new Vector3(-4.5f, other.transform.position.y +((tasoMitta+2)/2), 0), Quaternion.identity);
+			Instantiate(rightWall, new Vector3(4.5f,other.transform.position.y +((tasoMitta+2)/2) , 0), Quaternion.identity);
+			legitPisteet += pisteet;
+			pisteet = 0;
+		}
+	}
+	
+	void OnTriggerEnter(Collider other)
+	{
+		if(other.gameObject.tag== "DankMeme"){
+			pisteet++;
+			Destroy(other.gameObject);
 		}
 	}
 	public void randomLevel(int lvlSize, float yStart){
 		destroyWithTag("Taso");
+		destroyWithTag("SavePlane");
+		destroyWithTag("DankMeme");
 		for( int i = 0; i<= lvlSize; i++){
 			if(i < lvlSize){
-				for(int m= 0;m <Random.Range(0,3);m++){
-					Instantiate(Taso, new Vector3(Random.Range(-4.0f, 4.0f), yStart+i, 0), Quaternion.identity);
+				int rngTaso =Random.Range(0,3);
+				for(int m= 0;m <rngTaso;m++){
+					float rng = Random.Range(-4.0f, 4.0f);
+					if(rngTaso <=1){
+						Instantiate(memeTaso, new Vector3(rng, yStart+i, 0), Quaternion.identity);
+					}else{
+						Instantiate(Taso, new Vector3(rng, yStart+i, 0), Quaternion.identity);
+					}
+
+					if(Random.Range(0,10)>7.5){
+						Instantiate(meme, new Vector3(rng, (yStart+i)+0.5f, 0), Quaternion.identity);
+					
+					}
+					
 				}
 				
 			}else if (i == lvlSize){
 				Instantiate(savePoint, new Vector3(0, yStart+i, 0), Quaternion.identity);
+				
 			}
 	}
 	
